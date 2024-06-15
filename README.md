@@ -13,7 +13,7 @@ To set up the project, ensure you have Python 3.11+ installed. Follow these step
 Clone the repository:
 
 ```shell
-git clone https://github.com/yourusername/polarsteps-trip-analyzer.git
+git clone https://github.com/niekvleeuwen/polarsteps-trip-analyzer.git
 cd polarsteps-trip-analyzer
 ```
 
