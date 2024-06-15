@@ -6,6 +6,9 @@ authors = ["Niek van Leeuwen <ik@niekvanleeuwen.nl>"]
 license = "GNU GPLv3"
 readme = "README.md"
 
+[tool.poetry.scripts]
+ polarsteps-data-parser = "polarsteps_data_parser.main:cli"
+
 [tool.poetry.dependencies]
 python = "^3.12"
 click = "^8.1.7"
@@ -57,7 +60,6 @@ exclude = [
 line-length = 120
 indent-width = 4
 
-# Assume Python 3.12
 target-version = "py312"
 
 [tool.ruff.lint]
