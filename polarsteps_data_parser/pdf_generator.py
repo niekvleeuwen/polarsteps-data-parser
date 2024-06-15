@@ -1,20 +1,116 @@
-from reportlab.lib import utils
+from loguru import logger
 from reportlab.lib.pagesizes import letter
 from reportlab.lib.utils import ImageReader
-from reportlab.pdfgen import canvas
+from reportlab.pdfgen.canvas import Canvas
 
 from polarsteps_data_parser.model import Trip, Step
 
 
 class PDFGenerator:
-    def __init__(self, output: str):
-        self.filename = output
+    """Generates a PDF for Polarsteps Trip objects."""
 
-    def generate_pdf(self, trip: Trip):
-        self.create_step_pdf(trip.steps[0], self.filename)
+    PHOTO_WIDTH = 250
+
+    def __init__(self, output: str) -> None:
+        self.filename = output
+        self.canvas = None
+        self.y_position = None
+        self.width = None
+        self.height = None
+
+    def generate_pdf(self, trip: Trip) -> None:
+        """Generate a PDF for a given trip."""
+        self.canvas = Canvas(self.filename, pagesize=letter)
+
+        no_of_steps = len(trip.steps)
+        for i, step in enumerate(trip.steps[:2], start=1):
+            logger.debug(f"{i}/{no_of_steps} generating pages for step {step.name}")
+            self.create_step_pdf(step)
+
+        self.canvas.save()
+
+    def new_page(self) -> None:
+        """Add a new page to the canvas."""
+        self.canvas.showPage()
+        self.width, self.height = letter
+        self.y_position = self.height - 30
+
+    def create_step_pdf(self, step: Step) -> None:
+        """Add a step to the canvas."""
+        self.new_page()
+
+        # Title
+        self.heading(step.name)
+
+        # Basic Information
+        self.short_text(f"Location: {step.location.name}, {step.location.country}")
+        self.short_text(f"Date: {step.date.strftime('%d-%m-%Y')}")
+
+        # Description
+        self.long_text(step.description)
+
+        # Comments
+        self.long_text("Comments:")
+        for comment in step.comments:
+            self.short_text(f"Author: {comment.follower.name}")
+            self.long_text(comment.text)
+
+        # Photos
+        self.short_text("Photos:")
+        for photo in step.photos:
+            self.photo(photo)
+
+    def heading(self, text: str) -> None:
+        """Add heading to canvas."""
+        if self.y_position < 50:
+            self.new_page()
+        self.canvas.setFont("Helvetica-Bold", 16)
+        self.canvas.drawString(30, self.y_position, text)
+        self.y_position -= 30
+
+    def short_text(self, text: str) -> None:
+        """Add short text to canvas."""
+        if self.y_position < 50:
+            self.new_page()
+        self.canvas.setFont("Helvetica", 12)
+        self.canvas.drawString(30, self.y_position, text)
+        self.y_position -= 20
+
+    def long_text(self, text: str) -> None:
+        """Add long text to canvas."""
+        self.y_position -= 10
+        lines = self.wrap_text(text, self.width - 60, self.canvas, "Helvetica", 12)
+        for line in lines:
+            if self.y_position < 50:
+                self.new_page()
+                self.canvas.setFont("Helvetica", 12)
+            self.canvas.drawString(30, self.y_position, line)
+            self.y_position -= 20
+        self.y_position -= 20
+
+    def photo(self, photo_path: str) -> None:
+        """Add photo to canvas."""
+        try:
+            image = ImageReader(photo_path)
+            img_width, img_height = image.getSize()
+            aspect = img_height / float(img_width)
+            new_height = self.PHOTO_WIDTH * aspect
+            if self.y_position - new_height < 50:
+                self.canvas.showPage()
+                self.y_position = self.height - 30
+            self.canvas.drawImage(
+                image,
+                30,
+                self.y_position - new_height,
+                width=self.PHOTO_WIDTH,
+                height=new_height,
+            )
+            self.y_position = self.y_position - new_height - 20
+        except Exception as e:
+            logger.warning(f"Failed to load image {photo_path}: {e}")
 
     @staticmethod
-    def wrap_text(text, max_width, canvas, font, font_size):
+    def wrap_text(text: str, max_width: int, canvas: Canvas, font: str, font_size: str) -> list:
         """Wrap text to fit within max_width."""
         canvas.setFont(font, font_size)
         lines = []
@@ -29,73 +125,3 @@ class PDFGenerator:
                 current_line = word
         lines.append(current_line)
         return lines
-
-    def create_step_pdf(self, step: Step, filename: str):
-        c = canvas.Canvas(filename, pagesize=letter)
-        width, height = letter
-
-        # Title
-        c.setFont("Helvetica-Bold", 16)
-        c.drawString(30, height - 30, f"Step ID: {step.step_id}")
-        c.setFont("Helvetica", 12)
-
-        # Basic Information
-        c.drawString(30, height - 60, f"Name: {step.name}")
-        y_position = height - 80
-
-        # Description
-        description_lines = self.wrap_text(step.description, width - 60, c, "Helvetica", 12)
-        c.drawString(30, y_position, "Description:")
-        y_position -= 20
-        for line in description_lines:
-            c.drawString(30, y_position, line)
-            y_position -= 20
-
-        # Location and Date
-        c.drawString(30, y_position, f"Location: {step.location}")
-        y_position -= 20
-        c.drawString(30, y_position, f"Date: {step.date}")
-        y_position -= 40
-
-        # Photos
-        c.drawString(30, y_position, "Photos:")
-        y_position -= 20
-        for photo in step.photos:
-            try:
-                image = ImageReader(str(photo))
-                img_width, img_height = utils.ImageReader(image).getSize()
-                aspect = img_height / float(img_width)
-                new_width = 100
-                new_height = new_width * aspect
-                c.drawImage(
-                    image,
-                    30,
-                    y_position - new_height,
-                    width=new_width,
-                    height=new_height,
-                )
-                y_position -= new_height + 20
-            except Exception as e:
-                print(f"Failed to load image {photo}: {e}")
-
-        # Videos
-        c.drawString(30, y_position, "Videos:")
-        y_position -= 20
-        for video in step.videos:
-            c.drawString(30, y_position, str(video))
-            y_position -= 20
-
-        # Comments
-        c.drawString(30, y_position, "Comments:")
-        y_position -= 20
-        for comment in step.comments:
-            c.drawString(30, y_position, f"Author: {comment.author}")
-            y_position -= 20
-            comment_lines = self.wrap_text(comment.comment, width - 60, c, "Helvetica", 12)
-            for line in comment_lines:
-                c.drawString(30, y_position, line)
-                y_position -= 20
-            c.drawString(30, y_position, f"Date: {comment.date}")
-            y_position -= 40
-
-        c.save()

@@ -61,8 +61,10 @@ indent-width = 4
 target-version = "py312"
 
 [tool.ruff.lint]
-select = ["E", "F", "TCH", "C901", "W"]
-ignore = []
+select = ["E", "F", "TCH", "C901", "W", "D", "ANN"]
+ignore = ["D100", "D107", "D203", "D213", "ANN101", "ANN102"]
+
+pydocstyle.convention = "google"
 
 # Allow fix for all enabled rules (when `--fix`) is provided.
 fixable = ["ALL"]

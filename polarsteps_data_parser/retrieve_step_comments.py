@@ -6,7 +6,7 @@ from loguru import logger
 
 import requests
 
-from polarsteps_data_parser.model import Trip, Follower
+from polarsteps_data_parser.model import Trip, StepComment
 
 # Define the headers used for the request to polarsteps.com
 headers = {
@@ -31,29 +31,23 @@ headers = {
 class StepCommentsEnricher:
     """Enriches steps with comments retrieved using the Polarsteps API."""
 
-    def __init__(self, path: Path):
+    def __init__(self, path: Path) -> None:
         self.comment_data_path = path / "comments.json"
         headers["Cookie"] = os.getenv("COOKIE")
 
-    def enrich(self, trip: Trip) -> Trip:
-        """Enrich trip data with comments
+    def enrich(self, trip: Trip) -> None:
+        """Enrich trip data with comments.
 
         Args:
         ----
             trip: trip data
 
-        Returns:
-        -------
-            trip: trip data with comments
-
         """
         comment_data = self.retrieve_comments(trip)
-        self.write_comments_to_file(comment_data)
-        trip = self.parse_comment_data(comment_data, trip)
-        return trip
+        self.add_comments_to_steps(trip, comment_data)
 
     def retrieve_comments(self, trip: Trip) -> dict:
-        """Retrieves comments from Polarsteps API or local file storage
+        """Retrieve comments from Polarsteps API or local file storage.
 
         Args:
         ----
@@ -83,7 +77,7 @@ class StepCommentsEnricher:
         return comment_data
 
     def write_comments_to_file(self, comment_data: dict) -> None:
-        """Write comments data to file
+        """Write comments data to file.
 
         Args:
         ----
@@ -96,7 +90,7 @@ class StepCommentsEnricher:
     def load_comments_from_file(self) -> dict:
         """Load comments from data file.
 
-        Returns
+        Returns:
         -------
             dict: comment data
 
@@ -126,29 +120,22 @@ class StepCommentsEnricher:
 
         return response.json()
 
-    def parse_comment_data(self, comment_data: dict, trip: Trip) -> Trip:
-        """Parses the comment data to the model
+    def add_comments_to_steps(self, trip: Trip, comment_data: dict) -> Trip:
+        """Parse the comment data to the model.
 
         Args:
         ----
-            comment_data: comment data
             trip: trip data
+            comment_data: comment data
 
         Returns:
         -------
             trip: trip data including comments
 
         """
-        # TODO Parse users which left comments
-        followers = []
-        existing_ids = []
-        for step in comment_data["steps"]:
-            for comment in step["comments"]:
-                follower = Follower.from_json(comment["user"])
-                if follower.user_id not in existing_ids:
-                    followers.append(follower)
-                    existing_ids.append(follower.user_id)
-
-        # TODO Parse comments
+        for step, comments in zip(trip.steps, comment_data["steps"]):
+            if step.step_id != comments["id"]:
+                raise ValueError("Steps in trip and comment data are not in the same order.")
+            step.comments = [StepComment.from_json(c) for c in comments["comments"]]
 
         return trip
