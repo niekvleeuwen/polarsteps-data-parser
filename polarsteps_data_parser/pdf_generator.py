@@ -12,7 +12,6 @@ from polarsteps_data_parser.model import Trip, Step
 class PDFGenerator:
     """Generates a PDF for Polarsteps Trip objects."""
 
-    PHOTO_WIDTH = 250
     MAIN_FONT = ("Helvetica", 12)
     BOLD_FONT = ("Helvetica-Bold", 12)
     HEADING_FONT = ("Helvetica-Bold", 16)
@@ -42,6 +41,11 @@ class PDFGenerator:
     def generate_title_page(self, trip: Trip) -> None:
         """Generate title page."""
         self.title_heading(trip.name)
+        self.y_position -= 20
+        self.short_text(
+            f"{trip.start_date.strftime('%d-%m-%Y')} - {trip.end_date.strftime('%d-%m-%Y')}", bold=True, centered=True
+        )
+        self.photo(trip.cover_photo_path, centered=True, photo_width=400)
 
     def generate_step_pages(self, step: Step) -> None:
         """Add a step to the canvas."""
@@ -108,21 +112,21 @@ class PDFGenerator:
             self.y_position -= 20
         self.y_position -= 20
 
-    def photo(self, photo_path: Path) -> None:
+    def photo(self, photo_path: Path | str, centered: bool = False, photo_width: int = 250) -> None:
         """Add photo to canvas."""
         try:
             image = ImageReader(photo_path)
             img_width, img_height = image.getSize()
             aspect = img_height / float(img_width)
-            new_height = self.PHOTO_WIDTH * aspect
+            new_height = photo_width * aspect
             if self.y_position - new_height < 50:
                 self.canvas.showPage()
                 self.y_position = self.height - 30
             self.canvas.drawImage(
                 image,
-                30,
+                (self.width - photo_width) / 2.0 if centered else 30,
                 self.y_position - new_height,
-                width=self.PHOTO_WIDTH,
+                width=photo_width,
                 height=new_height,
             )
             self.y_position = self.y_position - new_height - 20
