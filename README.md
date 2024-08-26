@@ -17,6 +17,12 @@ git clone https://github.com/niekvleeuwen/polarsteps-data-parser.git
 cd polarsteps-trip-analyzer
 ```
 
+Ensure poetry is available, e.g. on Ubuntu/Debian you can run the following:
+
+```shell
+apt-get install python3 poetry
+```
+
 Install dependencies using Poetry:
 
 ```shell
