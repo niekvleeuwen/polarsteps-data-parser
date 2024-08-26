@@ -137,9 +137,14 @@ class PDFGenerator:
         """Wrap text to fit within max_width."""
         self.canvas.setFont(*self.MAIN_FONT)
         lines = []
-        words = text.split()
+        words = text.replace("\n", " <newline> ").split()
         current_line = ""
         for word in words:
+            if word == "<newline>":
+                lines.append(current_line)
+                current_line = ""
+                continue
+
             test_line = f"{current_line} {word}".strip()
             if self.canvas.stringWidth(test_line) <= max_width:
                 current_line = test_line
