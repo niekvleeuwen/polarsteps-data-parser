@@ -32,7 +32,7 @@ class PDFGenerator:
         self.generate_title_page(trip)
 
         no_of_steps = len(trip.steps)
-        for i, step in enumerate(trip.steps[:2], start=1):
+        for i, step in enumerate(trip.steps, start=1):
             logger.debug(f"{i}/{no_of_steps} generating pages for step {step.name}")
             self.generate_step_pages(step)
 
