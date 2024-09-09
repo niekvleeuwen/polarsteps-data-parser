@@ -120,8 +120,12 @@ class Step:
     def load_media(self) -> None:
         """Load photos and videos for the step."""
         step_dir = find_folder_by_id(self.step_id)
-        self.photos = list_files_in_folder(step_dir / "photos", dir_has_to_exist=False)
-        self.videos = list_files_in_folder(step_dir / "videos", dir_has_to_exist=False)
+        if step_dir == None:
+            self.photos = []
+            self.videos = []
+        else:
+            self.photos = list_files_in_folder(step_dir / "photos", dir_has_to_exist=False)
+            self.videos = list_files_in_folder(step_dir / "videos", dir_has_to_exist=False)
         logger.debug(f"Found {len(self.photos)} photos, {len(self.videos)} videos")
 
 
