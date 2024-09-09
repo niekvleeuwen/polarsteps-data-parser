@@ -120,7 +120,7 @@ class Step:
     def load_media(self) -> None:
         """Load photos and videos for the step."""
         step_dir = find_folder_by_id(self.step_id)
-        if (step_dir == None):
+        if step_dir == None:
             self.photos = []
             self.videos = []
         else:
