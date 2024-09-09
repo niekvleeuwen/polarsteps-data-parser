@@ -13,14 +13,26 @@ To set up the project, ensure you have Python 3.11+ installed. Follow these step
 Clone the repository:
 
 ```shell
-git clone https://github.com/niekvleeuwen/polarsteps-trip-analyzer.git
+git clone https://github.com/niekvleeuwen/polarsteps-data-parser.git
 cd polarsteps-trip-analyzer
+```
+
+Ensure poetry is available, e.g. on Ubuntu/Debian you can run the following:
+
+```shell
+apt-get install python3 poetry
 ```
 
 Install dependencies using Poetry:
 
 ```shell
 poetry install
+```
+
+Then enter the created virtual environment:
+
+```shell
+poetry shell
 ```
 
 ### Usage
