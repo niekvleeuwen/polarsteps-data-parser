@@ -102,6 +102,9 @@ class PDFGenerator:
 
     def long_text(self, text: str) -> None:
         """Add long text to canvas."""
+        if text == None:
+            return
+
         self.y_position -= 10
         lines = self.wrap_text(text, self.width - 60)
         for line in lines:
