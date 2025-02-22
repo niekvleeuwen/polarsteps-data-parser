@@ -6,5 +6,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: astral-sh/ruff-action@v3
+        with:
+          version: "0.9.7"
       - run: ruff check --fix
       - run: ruff format
