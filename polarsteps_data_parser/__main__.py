@@ -28,7 +28,7 @@ from polarsteps_data_parser.utils import load_json_from_file
     default=False,
     help="Whether to enrich the trip with comments or not.",
 )
-def cli(input_folder: str,  output: str, enrich_with_comments: str) -> None:
+def cli(input_folder: str, output: str, enrich_with_comments: str) -> None:
     """Parse the data from a Polarsteps trip export.
 
     INPUT_FOLDER should contain the Polarsteps data export of one (!) trip. Make sure the folder contains
@@ -61,6 +61,7 @@ def cli(input_folder: str,  output: str, enrich_with_comments: str) -> None:
     pdf_generator = PDFGenerator(output)
     pdf_generator.generate_pdf(trip)
     log(f"✅  Generated report: {click.format_filename(output)}", color="green", bold=True)
+
 
 def log(message: str, color: str = "white", bold: bool = False) -> None:
     """Helper function to format messages."""

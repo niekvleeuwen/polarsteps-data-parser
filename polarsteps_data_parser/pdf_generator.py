@@ -8,6 +8,7 @@ from reportlab.pdfgen.canvas import Canvas
 from polarsteps_data_parser.model import Trip, Step
 from tqdm import tqdm
 
+
 class PDFGenerator:
     """Generates a PDF for Polarsteps Trip objects."""
 
