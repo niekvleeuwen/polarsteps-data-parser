@@ -2,8 +2,6 @@ import json
 import os
 from pathlib import Path
 
-from loguru import logger
-
 import requests
 
 from polarsteps_data_parser.model import Trip, StepComment
@@ -66,11 +64,8 @@ class StepCommentsEnricher:
         # Retrieve data from the API
         comment_data = {"steps": []}
         for step in trip.steps:
-            logger.info(f"Retrieving comments for step {step.name} ({step.step_id})")
             comments = self.get_comments_for_step(step.step_id)
             comment_data["steps"].append({"id": step.step_id, "comments": comments["comments"]})
-
-        logger.info(f"Retrieved comment data for {len(trip.steps)} steps")
 
         self.write_comments_to_file(comment_data)
 
@@ -116,11 +111,10 @@ class StepCommentsEnricher:
         response = requests.get(url, headers=headers)
         response.raise_for_status()
 
-        logger.info(f"Received comments for {step_id}")
-
         return response.json()
 
-    def add_comments_to_steps(self, trip: Trip, comment_data: dict) -> Trip:
+    @staticmethod
+    def add_comments_to_steps(trip: Trip, comment_data: dict) -> Trip:
         """Parse the comment data to the model.
 
         Args:

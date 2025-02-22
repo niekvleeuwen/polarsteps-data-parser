@@ -1,13 +1,12 @@
 from pathlib import Path
 
-from loguru import logger
 from reportlab.lib.pagesizes import letter
 from reportlab.lib.utils import ImageReader
 from reportlab.pdfbase.pdfmetrics import stringWidth
 from reportlab.pdfgen.canvas import Canvas
 
 from polarsteps_data_parser.model import Trip, Step
-
+from tqdm import tqdm
 
 class PDFGenerator:
     """Generates a PDF for Polarsteps Trip objects."""
@@ -31,9 +30,9 @@ class PDFGenerator:
 
         self.generate_title_page(trip)
 
-        no_of_steps = len(trip.steps)
-        for i, step in enumerate(trip.steps, start=1):
-            logger.debug(f"{i}/{no_of_steps} generating pages for step {step.name}")
+        for i, step in tqdm(enumerate(trip.steps), desc="Generating pages", total=len(trip.steps), ncols=80):
+            if i == 5:
+                break
             self.generate_step_pages(step)
 
         self.canvas.save()
@@ -102,7 +101,7 @@ class PDFGenerator:
 
     def long_text(self, text: str) -> None:
         """Add long text to canvas."""
-        if text == None:
+        if text is None:
             return
 
         self.y_position -= 10
@@ -117,24 +116,21 @@ class PDFGenerator:
 
     def photo(self, photo_path: Path | str, centered: bool = False, photo_width: int = 250) -> None:
         """Add photo to canvas."""
-        try:
-            image = ImageReader(photo_path)
-            img_width, img_height = image.getSize()
-            aspect = img_height / float(img_width)
-            new_height = photo_width * aspect
-            if self.y_position - new_height < 50:
-                self.canvas.showPage()
-                self.y_position = self.height - 30
-            self.canvas.drawImage(
-                image,
-                (self.width - photo_width) / 2.0 if centered else 30,
-                self.y_position - new_height,
-                width=photo_width,
-                height=new_height,
-            )
-            self.y_position = self.y_position - new_height - 20
-        except Exception as e:
-            logger.warning(f"Failed to load image {photo_path}: {e}")
+        image = ImageReader(photo_path)
+        img_width, img_height = image.getSize()
+        aspect = img_height / float(img_width)
+        new_height = photo_width * aspect
+        if self.y_position - new_height < 50:
+            self.canvas.showPage()
+            self.y_position = self.height - 30
+        self.canvas.drawImage(
+            image,
+            (self.width - photo_width) / 2.0 if centered else 30,
+            self.y_position - new_height,
+            width=photo_width,
+            height=new_height,
+        )
+        self.y_position = self.y_position - new_height - 20
 
     def wrap_text(self, text: str, max_width: int) -> list:
         """Wrap text to fit within max_width."""

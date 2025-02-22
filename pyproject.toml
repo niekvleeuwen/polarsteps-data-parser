@@ -10,12 +10,13 @@ readme = "README.md"
  polarsteps-data-parser = "polarsteps_data_parser.main:cli"
 
 [tool.poetry.dependencies]
-python = "^3.12"
+python = "^3.11"
 click = "^8.1.7"
-loguru = "^0.7.2"
 python-dotenv = "^1.0.1"
 requests = "^2.32.3"
 reportlab = "^4.2.0"
+tqdm = "^4.67.1"
+colorama = "^0.4.6"
 
 [tool.poetry.group.dev.dependencies]
 pre-commit = "^3.7.1"

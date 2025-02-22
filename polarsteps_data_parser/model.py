@@ -3,8 +3,6 @@ from datetime import datetime, date
 from pathlib import Path
 from typing import Self
 
-from loguru import logger
-
 from polarsteps_data_parser.utils import parse_date, find_folder_by_id, list_files_in_folder
 
 
@@ -73,7 +71,7 @@ class StepComment:
 
     comment_id: str
     text: str
-    date: str
+    date: datetime
     follower: Follower
 
     @classmethod
@@ -103,7 +101,6 @@ class Step:
     @classmethod
     def from_json(cls, data: dict) -> Self:
         """Parse object from JSON data."""
-        logger.debug(f"Parsing step {data['id']}")
         s = Step(
             step_id=data["id"],
             name=data["name"] or data["display_name"],
@@ -120,13 +117,12 @@ class Step:
     def load_media(self) -> None:
         """Load photos and videos for the step."""
         step_dir = find_folder_by_id(self.step_id)
-        if step_dir == None:
+        if step_dir is None:
             self.photos = []
             self.videos = []
         else:
             self.photos = list_files_in_folder(step_dir / "photos", dir_has_to_exist=False)
             self.videos = list_files_in_folder(step_dir / "videos", dir_has_to_exist=False)
-        logger.debug(f"Found {len(self.photos)} photos, {len(self.videos)} videos")
 
 
 @dataclass
