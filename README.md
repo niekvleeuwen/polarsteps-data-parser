@@ -8,44 +8,34 @@ Tool designed to parse and extract data from the travel tracking app [Polarsteps
 ## Getting started
 
 ### Installation
-To set up the project, ensure you have Python 3.11+ installed. Follow these steps:
+To set up the project, ensure you have Python 3.11+ installed.
 
-Clone the repository:
-
+Install from PyPI using pip:
 ```shell
-git clone https://github.com/niekvleeuwen/polarsteps-data-parser.git
-cd polarsteps-trip-analyzer
-```
-
-Ensure poetry is available, e.g. on Ubuntu/Debian you can run the following:
-
-```shell
-apt-get install python3 poetry
-```
-
-Install dependencies using Poetry:
-
-```shell
-poetry install
-```
-
-Then enter the created virtual environment:
-
-```shell
-poetry shell
+pip install polarsteps-data-parser
 ```
 
 ### Usage
-To run the project, use the following command:
+To get the following output, run `polarsteps-data-parser --help`.
 
 ```shell
-polarsteps-data-parser [OPTIONS]
+Usage: polarsteps-data-parser [OPTIONS] INPUT_FOLDER
+
+  Parse the data from a Polarsteps trip export.
+
+  INPUT_FOLDER should contain the Polarsteps data export of one (!) trip. Make
+  sure the folder contains a `trip.json` and `locations.json`.
+
+Options:
+  --output TEXT           Output PDF file name  [default: Trip report.pdf]
+  --enrich-with-comments  Whether to enrich the trip with comments or not.
+  --help                  Show this message and exit.
 ```
 
 For example, to load and analyse a trip with the data located in the `./data/trip1` folder and enrich the trip with comments, use the following command:
 
 ```shell
-polarsteps-data-parser --input-folder ./data/trip1 --enrich-comments
+polarsteps-data-parser ./data/trip1 --enrich-with-comments
 ```
 
 ## Disclaimer
