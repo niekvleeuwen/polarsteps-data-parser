@@ -1,6 +1,6 @@
 [project]
 name = "polarsteps-data-parser"
-version = "0.1.0"
+version = "0.1.1"
 description = "Parse and extract data from the data export of travel tracking app Polarsteps."
 authors = [{ name = "Niek van Leeuwen", email = "ik@niekvanleeuwen.nl" }]
 requires-python = "~=3.11"
