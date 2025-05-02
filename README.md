@@ -5,18 +5,31 @@ Tool designed to parse and extract data from the travel tracking app [Polarsteps
 1. **Data backup**: The data export does not support viewing your data in any useful way. To preserve the data (who knows if Polarsteps still exists in 20 years), the tool combines the data and generates a PDF document.
 2. **Data analysis & visualization**: The parsed data can also be leveraged for in-depth analysis, enabling users to gain insights into their travel patterns, destinations visited, duration of stays, distances traveled, and more. This opens up possibilities for statistical analysis, trend identification, and visualization of the trip data.
 
+## Detailed Usage Guide
+
+If you’re new to Python or command-line tools, I’ve created a step-by-step usage guide to help you install and run polarsteps-data-parser (no programming experience required).
+
+👉 Read the guide here: [Usage guide](https://github.com/niekvleeuwen/polarsteps-data-parser/blob/main/USAGE_GUIDE.md)
+
 ## Getting started
 
-### Installation
-To set up the project, ensure you have Python 3.11+ installed.
 
-Install from PyPI using pip:
+1. Clone the repository and navigate to the project root:
+
 ```shell
-pip install polarsteps-data-parser
+git clone https://github.com/niekvleeuwen/polarsteps-data-parser.git
+cd polarsteps-data-parser
+```
+
+2. Install dependencies using [uv](https://docs.astral.sh/uv/).
+   Make sure `uv` is installed on your system before proceeding.
+
+```shell
+uv sync
 ```
 
 ### Usage
-To get the following output, run `polarsteps-data-parser --help`.
+To get the following output, run `uv run polarsteps-data-parser --help`.
 
 ```shell
 Usage: polarsteps-data-parser [OPTIONS] INPUT_FOLDER
@@ -35,7 +48,7 @@ Options:
 For example, to load and analyse a trip with the data located in the `./data/trip1` folder and enrich the trip with comments, use the following command:
 
 ```shell
-polarsteps-data-parser ./data/trip1 --enrich-with-comments
+uv run polarsteps-data-parser ./data/trip1 --enrich-with-comments
 ```
 
 ## Disclaimer
