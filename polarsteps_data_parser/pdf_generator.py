@@ -32,8 +32,6 @@ class PDFGenerator:
         self.generate_title_page(trip)
 
         for i, step in tqdm(enumerate(trip.steps), desc="Generating pages", total=len(trip.steps), ncols=80):
-            if i == 5:
-                break
             self.generate_step_pages(step)
 
         self.canvas.save()
