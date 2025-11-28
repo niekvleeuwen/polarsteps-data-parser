@@ -93,6 +93,23 @@ The program will create a **PDF** file, just open it like any regular document. 
 
 ---
 
+## **Optional: Enrich with comments**
+
+Comments are not included in the data export. To enrich the exported document with comments, there are two options:
+
+- Temporarily setting the trip to public.
+- Setting the `COOKIE` environment variable (see below).
+
+> A cookie provides full account access. Keep it private and use it only on your own machine after examining the source code.
+
+Log in to [polarsteps.com](https://www.polarsteps.com) and extract the cookie using the following method:
+
+1. Open Developer Tools → Network.
+2. Reload the page.
+3. Select any authenticated request.
+4. Inspect Request Headers or Cookies for the cookie value.
+5. Copy only the session token.
+
 ## **Troubleshooting**
 
 * **Command not found?**
