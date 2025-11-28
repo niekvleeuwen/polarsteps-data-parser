@@ -166,3 +166,6 @@ data/
 
 # Ignore exported PDF files
 *.pdf
+
+# Ignore cached fonts
+*.ttf

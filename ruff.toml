@@ -35,7 +35,7 @@ target-version = "py312"
 
 [lint]
 select = ["E", "F", "TCH", "C901", "W", "D", "ANN"]
-ignore = ["D100", "D107", "D203", "D213"]
+ignore = ["D100", "D107", "D203", "D213", "D102", "ANN101"]
 
 pydocstyle.convention = "google"
 

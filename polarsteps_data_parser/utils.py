@@ -1,6 +1,7 @@
 import json
 from datetime import datetime
 from pathlib import Path
+import time
 
 import click
 
@@ -69,3 +70,8 @@ def list_files_in_folder(folder_path: Path, dir_has_to_exist: bool = True) -> li
         return []
 
     return [file for file in folder.iterdir() if file.is_file()]
+
+
+def log(message: str, color: str = "white", bold: bool = False) -> None:
+    """Helper function to format messages."""
+    click.echo(click.style(f"[{time.strftime('%H:%M:%S')}] {message}", fg=color, bold=bold))

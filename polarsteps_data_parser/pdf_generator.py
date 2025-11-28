@@ -5,6 +5,7 @@ from reportlab.lib.utils import ImageReader
 from reportlab.pdfbase.pdfmetrics import stringWidth
 from reportlab.pdfgen.canvas import Canvas
 
+from polarsteps_data_parser.fonts import get_font_or_fallback
 from polarsteps_data_parser.model import Trip, Step
 from tqdm import tqdm
 
@@ -12,16 +13,13 @@ from tqdm import tqdm
 class PDFGenerator:
     """Generates a PDF for Polarsteps Trip objects."""
 
-    MAIN_FONT = ("Helvetica", 12)
-    BOLD_FONT = ("Helvetica-Bold", 12)
-    HEADING_FONT = ("Helvetica-Bold", 16)
-    TITLE_HEADING_FONT = ("Helvetica-Bold", 36)
-
     def __init__(self, output: str) -> None:
         self.filename = output
         self.canvas = None
         self.width, self.height = letter
         self.y_position = self.height - 30
+
+        self.font = get_font_or_fallback("Inter111")
 
     def generate_pdf(self, trip: Trip) -> None:
         """Generate a PDF for a given trip."""
@@ -32,6 +30,8 @@ class PDFGenerator:
         self.generate_title_page(trip)
 
         for i, step in tqdm(enumerate(trip.steps), desc="Generating pages", total=len(trip.steps), ncols=80):
+            if i == 5:
+                break
             self.generate_step_pages(step)
 
         self.canvas.save()
@@ -39,7 +39,7 @@ class PDFGenerator:
     def generate_title_page(self, trip: Trip) -> None:
         """Generate title page."""
         self.title_heading(trip.name)
-        self.y_position -= 20
+        self.font_set_regular()
         self.short_text(
             f"{trip.start_date.strftime('%d-%m-%Y')} - {trip.end_date.strftime('%d-%m-%Y')}", bold=True, centered=True
         )
@@ -73,15 +73,15 @@ class PDFGenerator:
         """Add heading to canvas."""
         if self.y_position < 50:
             self.new_page()
-        self.canvas.setFont(*self.HEADING_FONT)
+        self.font_set_heading()
         self.canvas.drawString(30, self.y_position, text)
         self.y_position -= 30
 
     def title_heading(self, text: str) -> None:
         """Add heading to canvas."""
         self.y_position -= 100
-        self.canvas.setFont(*self.TITLE_HEADING_FONT)
-        self.canvas.drawString(self.calc_width_centered(text, self.TITLE_HEADING_FONT), self.y_position, text)
+        self.font_set_title_heading()
+        self.canvas.drawString(self.calc_width_centered(text, ("Inter", 36)), self.y_position, text)
         self.y_position -= 30
 
     def calc_width_centered(self, text: str, font: tuple) -> float:
@@ -92,9 +92,14 @@ class PDFGenerator:
         """Add short text to canvas."""
         if self.y_position < 50:
             self.new_page()
-        font = self.BOLD_FONT if bold else self.MAIN_FONT
-        self.canvas.setFont(*font)
-        width = self.calc_width_centered(text, self.MAIN_FONT) if centered else 30
+
+        if bold:
+            self.font_set_regular()
+        else:
+            self.font_set_regular()  # TODO
+        # font = self.bold_font if bold else self.main_font
+        # self.canvas.setFont(*font)
+        width = self.calc_width_centered(text, ("Inter", 12)) if centered else 30
         self.canvas.drawString(width, self.y_position, text)
         self.y_position -= 20
 
@@ -108,7 +113,7 @@ class PDFGenerator:
         for line in lines:
             if self.y_position < 50:
                 self.new_page()
-                self.canvas.setFont(*self.MAIN_FONT)
+                self.font_set_regular()
             self.canvas.drawString(30, self.y_position, line)
             self.y_position -= 20
         self.y_position -= 20
@@ -133,7 +138,7 @@ class PDFGenerator:
 
     def wrap_text(self, text: str, max_width: int) -> list:
         """Wrap text to fit within max_width."""
-        self.canvas.setFont(*self.MAIN_FONT)
+        self.font_set_regular()
         lines = []
         words = text.replace("\n", " <newline> ").split()
         current_line = ""
@@ -151,3 +156,21 @@ class PDFGenerator:
                 current_line = word
         lines.append(current_line)
         return lines
+
+    def font_set_title_heading(self) -> None:
+        self._apply_font(self.font, 36)  # Extra bold weight
+
+    def font_set_heading(self) -> None:
+        self._apply_font(self.font, 20)
+
+    def font_set_regular(self) -> None:
+        self._apply_font(self.font, 12)
+
+    def _apply_font(self, font_name: str, size: int, weight: int = None) -> None:
+        # Apply variable font with dynamic adjustments for weight (if applicable)
+        self.canvas.setFont(font_name, size)
+        # TODO
+        if weight:
+            # For variable font, we might change weight via a custom method
+            # Set a weight value (e.g., "normal", "bold", etc.), if your variable font allows it
+            self.canvas.setFont(font_name, weight)
