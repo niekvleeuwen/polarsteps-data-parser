@@ -4,6 +4,7 @@ from pathlib import Path
 
 import requests
 
+from polarsteps_data_parser.utils import log
 from polarsteps_data_parser.model import Trip, StepComment
 
 # Define the headers used for the request to polarsteps.com
@@ -108,10 +109,22 @@ class StepCommentsEnricher:
         """
         url = f"https://www.polarsteps.com/api/social/steps/{step_id}/comments"
 
-        response = requests.get(url, headers=headers)
-        response.raise_for_status()
-
-        return response.json()
+        try:
+            response = requests.get(url, headers=headers)
+            response.raise_for_status()
+        except requests.HTTPError as err:
+            # Check 401
+            if response.status_code == 401:
+                log(
+                    "Error: Unauthorized request to Polarsteps API. "
+                    "Temporarily set the trip to public or set a valid COOKIE environment variable.",
+                    color="red",
+                )
+                exit(1)
+            else:
+                raise err
+        else:
+            return response.json()
 
     @staticmethod
     def add_comments_to_steps(trip: Trip, comment_data: dict) -> Trip:

@@ -1,4 +1,3 @@
-import time
 from pathlib import Path
 
 import click
@@ -7,7 +6,7 @@ from dotenv import load_dotenv
 from polarsteps_data_parser.retrieve_step_comments import StepCommentsEnricher
 from polarsteps_data_parser.model import Trip, Location
 from polarsteps_data_parser.pdf_generator import PDFGenerator
-from polarsteps_data_parser.utils import load_json_from_file
+from polarsteps_data_parser.utils import load_json_from_file, log
 
 
 @click.command()
@@ -61,11 +60,6 @@ def cli(input_folder: str, output: str, enrich_with_comments: str) -> None:
     pdf_generator = PDFGenerator(output)
     pdf_generator.generate_pdf(trip)
     log(f"✅  Generated report: {click.format_filename(output)}", color="green", bold=True)
-
-
-def log(message: str, color: str = "white", bold: bool = False) -> None:
-    """Helper function to format messages."""
-    click.echo(click.style(f"[{time.strftime('%H:%M:%S')}] {message}", fg=color, bold=bold))
 
 
 if __name__ == "__main__":
