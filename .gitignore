@@ -163,6 +163,11 @@ cython_debug/
 
 # Ignore folder containing Polarsteps export data
 data/
+user_data/
 
-# Ignore exported PDF files
+# Ignore exported PDF, markdown and media files
 *.pdf
+**/*.md
+!/*.md
+**/*.jpg
+**/*.mp4

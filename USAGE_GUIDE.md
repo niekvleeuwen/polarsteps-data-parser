@@ -69,15 +69,32 @@ cd "C:\Users\YourName\Documents"
 cd /Users/YourName/Documents
 ```
 
-Now run this command to generate the PDF:
+Now run this command to generate the PDF or Markdown:
 
+### Generate a PDF (default)
 ```
-polarsteps-data-parser "C:\Users\YourName\Documents\PolarstepsTriptrip\guatemala_12345678"
+polarsteps-data-parser "C:\Users\YourName\Documents\PolarstepsTrip\trip\guatemala_12345678"
 ```
 
-✅ This will create a PDF called **Trip report.pdf** inside the `Documents` folder (where you ran the command).
+### Generate Markdown
+```
+polarsteps-data-parser "C:\Users\YourName\Documents\PolarstepsTrip\trip\guatemala_12345678" --format md
+```
+
+✅ This will create a PDF called **Trip report.pdf** or a folder with the trip name containing the Markdown files inside the `Documents` folder (where you ran the command).
 
 ---
+
+### **Optional: Choose Output Format**
+
+By default, the program generates a PDF. You can choose between:
+- `pdf` (Default)
+- `md` (Markdown)
+
+To generate Markdown instead of PDF, use:
+```
+polarsteps-data-parser "<path>" --format md
+```
 
 ### **Optional: Customize the Output PDF Name**
 
