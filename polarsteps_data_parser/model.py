@@ -104,9 +104,9 @@ class Step:
         s = Step(
             step_id=data["id"],
             name=data["name"] or data["display_name"],
-            description=data["description"],
+            description=data.get("description", "") or "",
             location=StepLocation.from_json(data["location"]),
-            date=parse_date(data["start_time"]),
+            date=parse_date(data["start_time"]).date(),
             photos=[],
             videos=[],
             comments=[],
@@ -143,5 +143,5 @@ class Trip:
             start_date=parse_date(data.get("start_date")),
             end_date=parse_date(data.get("end_date")),
             cover_photo_path=data["cover_photo_path"],
-            steps=[Step.from_json(step) for step in data.get("all_steps")],
+            steps=[Step.from_json(step) for step in (data.get("all_steps") or [])],
         )

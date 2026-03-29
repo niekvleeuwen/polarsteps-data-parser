@@ -40,15 +40,17 @@ Usage: polarsteps-data-parser [OPTIONS] INPUT_FOLDER
   sure the folder contains a `trip.json` and `locations.json`.
 
 Options:
-  --output TEXT           Output PDF file name  [default: Trip report.pdf]
+  --output TEXT           Output PDF file name (only used if format is pdf)
+                          [default: Trip report.pdf]
+  --format [pdf|md]       Output format (PDF, or Markdown)  [default: pdf]
   --enrich-with-comments  Whether to enrich the trip with comments or not.
   --help                  Show this message and exit.
 ```
 
-For example, to load and analyse a trip with the data located in the `./data/trip1` folder and enrich the trip with comments, use the following command:
+For example, to load and analyse a trip with the data located in the `./data/trip1` folder, enrich it with comments and generate a Markdown report, use the following command:
 
 ```shell
-uv run polarsteps-data-parser ./data/trip1 --enrich-with-comments
+uv run polarsteps-data-parser ./data/trip1 --enrich-with-comments --format md
 ```
 
 ## Disclaimer
